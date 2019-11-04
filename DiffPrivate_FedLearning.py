@@ -261,11 +261,11 @@ def run_differentially_private_federated_averaging(loss, train_op, eval_correct,
         # End of a communication round
         ############################################################################################################
 
-        print('......Communication round %s completed' % str(real_round))
+        print('Communication round %s completed' % str(real_round))
         # Compute a new model according to the updates and the Gaussian mechanism specifications from FLAGS
         # Also, if computed_deltas is an empty list, compute delta; the probability of Epsilon-Differential Privacy
         # being broken by allocating the model. If computed_deltas is passed, instead of computing delta, the
-        # pre-computed vaue is used.
+        # pre-computed value is used.
         model, delta = weights_accountant.Update_via_GaussianMechanism(sess, acc, FLAGS, computed_deltas)
 
         # append delta to a list.

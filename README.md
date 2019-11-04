@@ -11,4 +11,4 @@ Note that the privacy agent is not completely set up yet (especially for more th
 
 ## Requirements
 - [TensorFlow 2.0](https://www.tensorflow.org/)
-- [Python 3.6]
+- Python 3.6

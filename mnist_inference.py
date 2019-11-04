@@ -102,7 +102,7 @@ def loss(logits, labels):
   Returns:
     loss: Loss tensor of type float.
   """
-  labels = tf.to_int64(labels)
+  labels = tf.dtypes.cast(labels, tf.int64)
   cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
       labels=labels, logits=logits, name='xentropy')
   return tf.reduce_mean(cross_entropy, name='xentropy_mean')

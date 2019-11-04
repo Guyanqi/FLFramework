@@ -11,13 +11,13 @@ tf.disable_v2_behavior()
 def sample(N, b, e, m, sigma, eps, save_dir, log_dir):
 
     # Specs for the model that we would like to train in differentially private federated fashion:
-    hidden1 = 600
+    hidden1 = 600  # the clients get 600 data points
     hidden2 = 100
 
     # Specs for the differentially private federated fashion learning process.
 
     # A data object that already satisfies client structure and has the following attributes:
-    # DATA.data_set : A list of labeld training examples.
+    # DATA.data_set : A list of labeled training examples.
     # DATA.client_set : A
     DATA = Data(save_dir, N)
 
@@ -30,12 +30,12 @@ def sample(N, b, e, m, sigma, eps, save_dir, log_dir):
 
         Accuracy_accountant, Delta_accountant, model = \
             run_differentially_private_federated_averaging(loss, train_op, eval_correct, DATA, data_placeholder,
-                                                           labels_placeholder, b=b, e=e,m=m, sigma=sigma, eps=eps,
+                                                           labels_placeholder, b=b, e=e, m=m, sigma=sigma, eps=eps,
                                                            save_dir=save_dir, log_dir=log_dir)
 
 
 def main(_):
-    sample(N=FLAGS.N, b=FLAGS.b, e=FLAGS.e,m=FLAGS.m, sigma=FLAGS.sigma, eps=FLAGS.eps, save_dir=FLAGS.save_dir, log_dir=FLAGS.log_dir)
+    sample(N=FLAGS.N, b=FLAGS.b, e=FLAGS.e, m=FLAGS.m, sigma=FLAGS.sigma, eps=FLAGS.eps, save_dir=FLAGS.save_dir, log_dir=FLAGS.log_dir)
 
 
 if __name__ == '__main__':
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--eps',
         type=float,
-        default=8,
+        default=50,
         help='Epsilon'
     )
     parser.add_argument(

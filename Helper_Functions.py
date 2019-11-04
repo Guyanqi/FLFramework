@@ -17,17 +17,18 @@ class PrivAgent:
     def __init__(self, N, Name):
         self.N = N
         self.Name = Name
+        comm_round = 50  # limited communciation round
         if N == 100:
             self.m = [30]*100
-            self.Sigma = [1]*24
+            self.Sigma = [1]*comm_round
             self.bound = 0.001
         if N == 1000:
             self.m = [100]*10
-            self.Sigma = [1]*24
+            self.Sigma = [1]*comm_round
             self.bound = 0.00001
         if N == 10000:
             self.m = [300]*10
-            self.Sigma = [1]*24
+            self.Sigma = [1]*comm_round
             self.bound = 0.000001
         if(N != 100 and N != 1000 and N != 10000 ):
             print('!!!!!!! YOU CAN ONLY USE THE PRIVACY AGENT FOR N = 100, 1000 or 10000 !!!!!!!')
@@ -59,7 +60,7 @@ def Vname_to_Vname(var):
 
 
 class WeightsAccountant:
-    def __init__(self,sess,model,Sigma, real_round):
+    def __init__(self, sess, model, Sigma, real_round):
 
         self.Weights = [np.expand_dims(sess.run(v), -1) for v in tf.trainable_variables()]
         self.keys = [Vname_to_FeedPname(v) for v in tf.trainable_variables()]
@@ -79,7 +80,7 @@ class WeightsAccountant:
         self.num_weights = len(self.Weights)
         self.round = real_round
 
-    def save_params(self,save_dir):
+    def save_params(self, save_dir):
         filehandler = open(save_dir + '/Weights_accountant_round_'+self.round + '.pkl', "w")   # delete b
         pickle.dump(self, filehandler)
         filehandler.close()
@@ -321,7 +322,6 @@ def global_step_creator():
 
 def bring_Accountant_up_to_date(Acc, sess, rounds, PrivAgent, FLAGS):
     '''
-
     :param Acc: A Privacy accountant
     :param sess: A tensorflow session
     :param rounds: the number of rounds that the privacy accountant shall iterate
@@ -346,17 +346,13 @@ def bring_Accountant_up_to_date(Acc, sess, rounds, PrivAgent, FLAGS):
     print('The accountant is up to date!')
 
 
-def print_loss_and_accuracy(global_loss,accuracy):
+def print_loss_and_accuracy(global_loss, accuracy):
     print(' - Current Model has a loss of:           %s' % global_loss)
     print(' - The Accuracy on the validation set is: %s' % accuracy)
-    print('--------------------------------------------------------------------------------------')
-    print('--------------------------------------------------------------------------------------')
 
 
 def print_new_comm_round(real_round):
-    print('--------------------------------------------------------------------------------------')
     print('------------------------ Communication round %s ---------------------------------------' % str(real_round))
-    print('--------------------------------------------------------------------------------------')
 
 
 def check_validaity_of_FLAGS(FLAGS):
@@ -366,8 +362,8 @@ def check_validaity_of_FLAGS(FLAGS):
             print('\n \n -------- If m is specified the Privacy Agent is not used, then Sigma has to be specified too. --------\n \n')
             raise NotImplementedError
     if not FLAGS.sigma == 0:
-        if FLAGS.m ==0:
-            print('\n \n-------- If Sigma is specified the Privacy Agent is not used, then m has to be specified too. -------- \n \n')
+        if FLAGS.m == 0:
+            print('\n \n -------- If Sigma is specified the Privacy Agent is not used, then m has to be specified too. -------- \n \n')
             raise NotImplementedError
     if not FLAGS.sigma == 0 and not FLAGS.m == 0:
         FLAGS.priv_agent = False
