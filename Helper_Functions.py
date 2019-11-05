@@ -14,24 +14,25 @@ tf.disable_v2_behavior()
 
 
 class PrivAgent:
-    def __init__(self, N, Name):
+    def __init__(self, N, Name, comm_round):
         self.N = N
         self.Name = Name
-        comm_round = 50  # limited communciation round
+        self.comm_round = comm_round + 1  # limited communication round
         if N == 100:
-            self.m = [30]*100
-            self.Sigma = [1]*comm_round
+            self.m = [30]*self.comm_round  # randomly choose 30 clients
+            self.Sigma = [1]*self.comm_round  # sigma = 1
             self.bound = 0.001
         if N == 1000:
-            self.m = [100]*10
-            self.Sigma = [1]*comm_round
+            self.m = [100]*self.comm_round  # randomly choose 100 clients
+            self.Sigma = [1]*self.comm_round
             self.bound = 0.00001
         if N == 10000:
-            self.m = [300]*10
-            self.Sigma = [1]*comm_round
+            self.m = [300]*self.comm_round  # randomly choose 300 clients
+            self.Sigma = [1]*self.comm_round
             self.bound = 0.000001
-        if(N != 100 and N != 1000 and N != 10000 ):
-            print('!!!!!!! YOU CAN ONLY USE THE PRIVACY AGENT FOR N = 100, 1000 or 10000 !!!!!!!')
+        if N != 100 and N != 1000 and N != 10000:
+            print('In this setting YOU CAN ONLY USE THE PRIVACY AGENT FOR N = 100, 1000 or 10000')
+            print('Go to Helper_Functions for modification')
 
     def get_m(self, r):
         return self.m[r]
@@ -178,7 +179,7 @@ def load_from_directory_or_initialize(directory, FLAGS):
     This function looks for a model that corresponds to the characteristics specified and loads potential progress.
     If it does not find any model or progress, it initializes a new model.
     :param directory: STRING: the directory where to look for models and progress.
-    :param FLAGS: CLASS INSTANCE: holds general trianing params
+    :param FLAGS: CLASS INSTANCE: holds general training params
     :param PrivacyAgent:
     :return:
     '''
@@ -247,7 +248,9 @@ def load_from_directory_or_initialize(directory, FLAGS):
                 # This would mean that learning was never finished, i.e. the first time a model with this specs was
                 # learned got interrupted.
                 real_round = len(Accuracy_accountant) - 1
-                fil = open(directory + '/model.pkl', 'r')     # delete b
+                # tmp_dir = directory + '/model.pkl'  # for debug
+                # print('tmp_dir:', tmp_dir)
+                fil = open(directory + '/model.pkl', 'rb')
                 model = pickle.load(fil)
                 fil.close()
                 FLAGS.loaded = True

@@ -73,7 +73,7 @@ def run_differentially_private_federated_averaging(loss, train_op, eval_correct,
 
     # If no privacy agent was specified, the default privacy agent is used.
     if not privacy_agent:
-        privacy_agent = PrivAgent(len(data.client_set), 'default_agent')
+        privacy_agent = PrivAgent(N=len(data.client_set), Name='default_agent', comm_round=max_comm_rounds)
 
     # A Flags instance is created that will fuse all specified parameters and default those that are not specified.
     FLAGS = Flag(len(data.client_set), b, e, record_privacy, m, sigma, eps, save_dir, log_dir, max_comm_rounds, gm,
@@ -100,7 +100,7 @@ def run_differentially_private_federated_averaging(loss, train_op, eval_correct,
                                                  dtype=tf.float32)
                                   for var in tf.trainable_variables()]))
 
-    # - assignments : Is a list of nodes. when run, all trainable variables are set to the value specified through
+    # - assignments : a list of nodes. when run, all trainable variables are set to the value specified through
     #                 the placeholders in 'model_placeholder'.
 
     assignments = [tf.assign(var, model_placeholder[Vname_to_FeedPname(var)]) for var in
@@ -116,21 +116,15 @@ def run_differentially_private_federated_averaging(loss, train_op, eval_correct,
     model, accuracy_accountant, delta_accountant, acc, real_round, FLAGS, computed_deltas = \
         load_from_directory_or_initialize(save_dir, FLAGS)
 
-    m = int(FLAGS.m)
-    sigma = float(FLAGS.sigma)
     # - m : amount of clients participating in a round
     # - sigma : variable for the Gaussian Mechanism.
     # Both will only be used if no Privacy_Agent is deployed.
-
-    ################################################################################################################
-
-    # Usual Tensorflow...
+    m = int(FLAGS.m)
+    sigma = float(FLAGS.sigma)
 
     init = tf.global_variables_initializer()
     sess = tf.Session()
     sess.run(init)
-
-    ################################################################################################################
 
     # If there was no loadable model, we initialize a model:
     # - model : dictionary having as keys the names of the placeholders associated to each variable. It will serve
@@ -153,8 +147,6 @@ def run_differentially_private_federated_averaging(loss, train_op, eval_correct,
 
     if not FLAGS.relearn and real_round > 0:
         bring_Accountant_up_to_date(acc, sess, real_round, privacy_agent, FLAGS)
-
-    ################################################################################################################
 
     # This is where the actual communication rounds start:
 
@@ -183,7 +175,7 @@ def run_differentially_private_federated_averaging(loss, train_op, eval_correct,
             print_loss_and_accuracy(global_loss, accuracy)
 
         if delta_accountant[-1] > privacy_agent.get_bound() or math.isnan(delta_accountant[-1]):
-            print('************** The last step exhausted the privacy budget **************')
+            print('The last step exhausted the privacy budget!!!')
             if not math.isnan(delta_accountant[-1]):
                 try:
                     None
@@ -201,6 +193,9 @@ def run_differentially_private_federated_averaging(loss, train_op, eval_correct,
         # Start of a new communication round
 
         real_round = real_round + 1
+        if real_round >= FLAGS.max_comm_rounds:
+            print('Max communication rounds meet. Stop.')
+            break
 
         print_new_comm_round(real_round)
 

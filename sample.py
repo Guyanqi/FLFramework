@@ -8,7 +8,7 @@ import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 
 
-def sample(N, b, e, m, sigma, eps, save_dir, log_dir):
+def sample(N, b, e, m, sigma, eps, save_dir, log_dir, max_comm_rounds):
 
     # Specs for the model that we would like to train in differentially private federated fashion:
     hidden1 = 600  # the clients get 600 data points
@@ -26,16 +26,19 @@ def sample(N, b, e, m, sigma, eps, save_dir, log_dir):
         # Building the model that we would like to train in differentially private federated fashion.
         # We will need the tensorflow training operation for that model, its loss and an evaluation method:
 
-        train_op, eval_correct, loss, data_placeholder, labels_placeholder = mnist.mnist_fully_connected_model(b, hidden1, hidden2)
+        # choose machine learning model:
+        # ml_model = mnist.mnist_fully_connected_model(batch_size=b, hidden1=hidden1, hidden2=hidden2)
+        ml_model = mnist.mnist_cnn_model(batch_size=b)
+        train_op, eval_correct, loss, data_placeholder, labels_placeholder = ml_model
 
         Accuracy_accountant, Delta_accountant, model = \
             run_differentially_private_federated_averaging(loss, train_op, eval_correct, DATA, data_placeholder,
                                                            labels_placeholder, b=b, e=e, m=m, sigma=sigma, eps=eps,
-                                                           save_dir=save_dir, log_dir=log_dir)
+                                                           save_dir=save_dir, log_dir=log_dir, max_comm_rounds= max_comm_rounds)
 
 
 def main(_):
-    sample(N=FLAGS.N, b=FLAGS.b, e=FLAGS.e, m=FLAGS.m, sigma=FLAGS.sigma, eps=FLAGS.eps, save_dir=FLAGS.save_dir, log_dir=FLAGS.log_dir)
+    sample(N=FLAGS.N, b=FLAGS.b, e=FLAGS.e, m=FLAGS.m, sigma=FLAGS.sigma, eps=FLAGS.eps, save_dir=FLAGS.save_dir, log_dir=FLAGS.log_dir, max_comm_rounds=FLAGS.max_comm_rounds)
 
 
 if __name__ == '__main__':
@@ -88,6 +91,12 @@ if __name__ == '__main__':
         default=os.path.join(os.getenv('TEST_TMPDIR', '/tmp'),
                              'tensorflow/mnist/logs/fully_connected_feed'),
         help='Directory to put the log data.'
+    )
+    parser.add_argument(
+        '--max_comm_rounds',
+        type=int,
+        default=3,
+        help='Max communication rounds'
     )
     FLAGS, unparsed = parser.parse_known_args()
     tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)

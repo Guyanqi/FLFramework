@@ -15,6 +15,7 @@ def create_clients(num, dir):
 
     num_examples = 50000
     num_classes = 10
+    print('Target checking directory: '+dir + '/'+str(num)+'_clients.pkl')
     if os.path.exists(dir + '/'+str(num)+'_clients.pkl'):
         print('Client exists at: '+dir + '/'+str(num)+'_clients.pkl')
         return

@@ -120,7 +120,7 @@ class MomentsAccountant(object):
   Note: The constructor of this class creates tf.Variables that must
   be initialized with tf.global_variables_initializer() or similar calls.
   MomentsAccountant accumulates the high moments of the privacy loss. It
-  requires a method for computing differenital moments of the noise (See
+  requires a method for computing differential moments of the noise (See
   below for the definition). So every specific accountant should subclass
   this class by implementing _differential_moments method.
   Denote by X_i the random variable of privacy loss at the i-th step.
