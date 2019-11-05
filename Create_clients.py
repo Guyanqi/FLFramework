@@ -2,7 +2,6 @@ import pickle
 import numpy as np
 import os
 
-
 def create_clients(num, dir):
 
     '''

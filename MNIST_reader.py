@@ -8,7 +8,8 @@ Loosely inspired by http://abel.ee.ucla.edu/cvxopt/_downloads/mnist.py
 which is GPL licensed.
 """
 
-def read(dataset = "training", path = "."):
+
+def read(dataset="training", path="."):
 
     if dataset is "training":
         fname_img = os.path.join(path, 'train-images-idx3-ubyte')
@@ -29,7 +30,6 @@ def read(dataset = "training", path = "."):
     with open(fname_img, 'rb') as fimg:
         magic, num, rows, cols = struct.unpack(">IIII", fimg.read(16))
         img = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbl), rows, cols)
-
 
     # Reshape and normalize
 
