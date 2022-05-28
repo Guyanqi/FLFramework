@@ -53,7 +53,7 @@ def run_differentially_private_federated_averaging(loss, train_op, eval_correct,
     :param label_placeholder:   The placeholder from the tensorflow graph that is used to feed the model with labels
     :param privacy_agent:       A class instance that has callabels .get_m(r) .get_Sigma(r) .get_bound(), where r is the
                                 communication round.
-    :param b:                   Batchsize
+    :param b:                   Batch size
     :param e:                   Epochs to run on each client
     :param record_privacy:      Whether to record the privacy or not
     :param m:                   If specified, a privacyAgent is not used, instead the parameter is kept constant

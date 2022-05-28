@@ -44,6 +44,7 @@ import scipy.stats
 # from sympy.mpmath import mp
 import mpmath as mp
 
+
 def _to_np_float64(v):
   if math.isnan(v) or math.isinf(v):
     return np.inf
